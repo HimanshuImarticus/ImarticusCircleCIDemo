@@ -35,9 +35,9 @@ jobs:
       - run:
           name: which java
           command: readlink -f $(which java)   
-      - run:
-          name: ls l app/libs
-          command: ls app/libs/
+#      - run:
+#          name: ls l app/libs
+#          command: ls app/libs/
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
