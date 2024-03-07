@@ -1,0 +1,63 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/android:2024.01
+
+    environment:
+      JVM_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      # Set up JDK 11
+      - run:
+          name: Install OpenJDK 11
+          command: |
+            sudo update-java-alternatives -s java-1.11.0-openjdk-amd64
+            java -version
+
+      # # Set up Gradle 7.5
+      # - run:
+      #     name: Install Gradle 7.5
+      #     command: |
+      #       wget https://services.gradle.org/distributions/gradle-7.5-bin.zip
+      #       unzip -d ~/ gradle-7.5-bin.zip
+      #       export PATH=~/gradle-7.5/bin:$PATH
+      #       gradle --version
+      - run:
+          name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
+          command: sudo chmod +x ./gradlew
+      - run:
+          name: java version
+          command: java --version
+      - run:
+          name: which java
+          command: readlink -f $(which java)   
+      - run:
+          name: ls l app/libs
+          command: ls app/libs/
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      # Run 'gradle clean build'
+      - run:
+          name: Run 'gradle clean build'
+          command: gradle clean build
+
+      # Run 'gradle test'
+      - run:
+          name: Run 'gradle test'
+          command: gradle test
+
+      # Run 'gradle build'
+      - run:
+          name: Run 'gradle build'
+          command: gradle build
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
